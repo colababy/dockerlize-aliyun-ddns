@@ -10,6 +10,10 @@ from urllib.parse import urlencode, quote_plus
 from urllib.request import urlopen
 
 
+def log(*args, **kwargs):
+    print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), ":", *args, *kwargs)
+
+
 def get_ip_address():
     url = 'http://members.3322.org/dyndns/getip'
     try:
@@ -17,7 +21,7 @@ def get_ip_address():
         body = res.read().decode().strip()
         return body
     except RuntimeError as e:
-        print("获取公网ip失败:", e.args)
+        log("获取公网ip失败:", e.args)
         return None
 
 
@@ -34,7 +38,7 @@ def get_domain_record():
             return None
         return res["DomainRecords"]["Record"][0]
     except RuntimeError as e:
-        print("获取域名解析失败:", e)
+        log("获取域名解析失败:", e)
 
 
 def update_domain_record(record):
@@ -49,9 +53,9 @@ def update_domain_record(record):
     url = "http://alidns.aliyuncs.com/?" + urlencode(signed_params)
     try:
         urlopen(url)
-        print("更新域名解析成功!")
+        log("更新域名解析成功!")
     except HTTPError as e:
-        print("更新域名解析失败:", e)
+        log("更新域名解析失败:", e)
 
 
 def add_domain_record(record):
@@ -66,9 +70,9 @@ def add_domain_record(record):
     url = "http://alidns.aliyuncs.com/?" + urlencode(signed_params)
     try:
         urlopen(url)
-        print("添加域名解析成功!")
+        log("添加域名解析成功!")
     except HTTPError as e:
-        print("添加域名解析失败:", e)
+        log("添加域名解析失败:", e)
 
 
 def get_common_params():
@@ -115,10 +119,10 @@ def main():
     if record is not None:
         if record["Value"] != address:
             record["Value"] = address
-            print("更新域名解析IP地址为:", address)
+            log("更新域名解析IP地址为:", address)
             update_domain_record(record)
         else:
-            print("当前IP地址有效:", address)
+            log("当前IP地址有效:", address)
     else:
         domains = os.getenv("DOMAIN").split(".")
         record = {
@@ -127,7 +131,7 @@ def main():
             "Type": "A",
             "Value": address
         }
-        print("添加域名解析IP地址:", address)
+        log("添加域名解析IP地址:", address)
         add_domain_record(record)
 
 
