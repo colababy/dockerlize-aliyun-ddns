@@ -7,7 +7,7 @@ ENV DOMAIN=EXAMPLE.DOMAIN.COM
 WORKDIR /
 ADD ddns.py /ddns.py
 
-RUN printf "%b" "0 0/5 * * * python /ddns.py" > /etc/crontabs/root && \
+RUN printf "%b" "0 */5 * * * python /ddns.py >> /var/log/ddns.log" > /etc/crontabs/root && \
     printf "%b" '#!'"/usr/bin/env sh\n \
 if [ \"\$1\" = \"daemon\" ];  then \n \
  trap \"echo stop && killall crond && exit 0\" SIGTERM SIGINT \n \
